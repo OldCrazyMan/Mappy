@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "sync_synchronisation_recycle_refresh_icon-icons.com_55990.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
