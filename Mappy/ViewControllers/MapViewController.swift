@@ -11,7 +11,7 @@ import CoreLocation
 
 class MapViewController: UIViewController {
     
-    let mapView: MKMapView = {
+    private let mapView: MKMapView = {
         let mapView = MKMapView()
         mapView.translatesAutoresizingMaskIntoConstraints = false
         return mapView
@@ -88,14 +88,14 @@ class MapViewController: UIViewController {
         for index in 0...pointAnnotationArray.count - 2 {
             createDirectionRequest(startCoordinate: pointAnnotationArray[index].coordinate, finishCoordinate: pointAnnotationArray[index + 1].coordinate)
         }
-        
         mapView.showAnnotations(pointAnnotationArray, animated: true)
     }
     
     private func setupPlaceMark(address: String) {
         
         let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(address) { placemark, error in
+        geocoder.geocodeAddressString(address) { [weak self] placemark, error in
+            guard let self = self else { return }
             if let error = error {
                 print(error)
                 self.alert(title: "Ошибка", message: "Сервер не доступен. Попробуйте снова."){
@@ -125,6 +125,7 @@ class MapViewController: UIViewController {
             self.mapView.showAnnotations(self.pointAnnotationArray, animated: true)
         }
     }
+    
     private func createDirectionRequest(startCoordinate: CLLocationCoordinate2D, finishCoordinate: CLLocationCoordinate2D) {
         let startLocation = MKPlacemark(coordinate: startCoordinate)
         let finishLocation = MKPlacemark(coordinate: finishCoordinate)
@@ -136,7 +137,8 @@ class MapViewController: UIViewController {
         request.requestsAlternateRoutes = true
         
         let direction = MKDirections(request: request)
-        direction.calculate { (responce, error) in
+        direction.calculate { [weak self] (responce, error) in
+            guard let self = self else { return }
             if let error = error {
                 print(error)
                 return
@@ -175,24 +177,18 @@ extension MapViewController {
             mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
-        ])
-        
-        NSLayoutConstraint.activate([
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+     
             addressButton.centerYAnchor.constraint(equalTo: mapView.centerYAnchor),
             addressButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -15),
             addressButton.heightAnchor.constraint(equalToConstant: 50),
-            addressButton.widthAnchor.constraint(equalToConstant: 50)
-        ])
-        
-        NSLayoutConstraint.activate([
+            addressButton.widthAnchor.constraint(equalToConstant: 50),
+      
             refreshButton.centerXAnchor.constraint(equalTo: addressButton.centerXAnchor),
             refreshButton.topAnchor.constraint(equalTo: addressButton.bottomAnchor, constant: 40),
             refreshButton.heightAnchor.constraint(equalToConstant: 50),
-            refreshButton.widthAnchor.constraint(equalToConstant: 50)
-        ])
-        
-        NSLayoutConstraint.activate([
+            refreshButton.widthAnchor.constraint(equalToConstant: 50),
+    
             routeButton.centerXAnchor.constraint(equalTo: mapView.centerXAnchor),
             routeButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -40),
             routeButton.heightAnchor.constraint(equalToConstant: 80),
